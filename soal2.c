@@ -1,3 +1,11 @@
+/** EL2008 Praktikum Pemecahan Masalah dengan Pemrograman 2026/2027
+ *  Modul               : 05 - Foundation of Algorithms
+ *  Hari dan Tanggal    : Senin, 11 May 2026
+ *  Nama (NIM)          : Arvin Fauzan Badri (13224072)
+ *  Nama File           : soal2.c
+ *  Deskripsi           : Soal 2. INput sebuah digraph, cek apakah ada siklus
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -23,40 +31,39 @@ void add_edge(Graph* g, int src, int dest) {
     g->nodes[src] = edge;
 }
 
-int detect_cycle_dfs(Edge* node_edges, int vert, int* visited, int* rec_stack) {
-    if(rec_stack[vert])
+int detect_cycle_dfs(Edge* node_edges, int vert, int* visited, int* checked) {
+    if(checked[vert])
         return 1;
 
     if(visited[vert])
         return 0;
 
     visited[vert] = 1;
-    rec_stack[vert] = 1;
+    checked[vert] = 1;
     
     for(Edge* edge = node_edges; edge != NULL; edge = edge->next) {
-        if(detect_cycle_dfs(node_edges, edge->dest, visited, rec_stack)) {
+        if(detect_cycle_dfs(node_edges, edge->dest, visited, checked))
             return 1;
-        }
     }
 
-    rec_stack[vert] = 0;
+    checked[vert] = 0;
     return 0;
 }
 
 int detect_cycle(Graph* g) {
     int* visited = calloc(g->node_count, sizeof(*visited));
-    int* rec_stack = calloc(g->node_count, sizeof(*visited));
+    int* checked = calloc(g->node_count, sizeof(*visited));
 
     for(int vert = 0; vert < g->node_count; ++vert) {
-        if(!visited[vert] && detect_cycle_dfs(g->nodes[vert], vert, visited, rec_stack)) {
+        if(!visited[vert] && detect_cycle_dfs(g->nodes[vert], vert, visited, checked)) {
             free(visited);
-            free(rec_stack);
+            free(checked);
             return 1;
         }
     }
 
     free(visited);
-    free(rec_stack);
+    free(checked);
     return 0;
 }
 
